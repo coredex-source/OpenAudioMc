@@ -1,7 +1,9 @@
-# OpenAudioMc
+# OpenAudioMc-Folia
 ![image](https://github.com/user-attachments/assets/9a35d8e7-b4a0-4c78-9a51-56be58ec9e9e)
 
 OpenAudioMc is a plugin for Minecraft that provides proximity voice chat and audio system without needing mods. It works on servers running Bungeecord, Velocity, Spigot, and more.
+
+### Fork of OpenAudioMc for Folia. Only the plugin is ported to folia.
 
 ## Features
 

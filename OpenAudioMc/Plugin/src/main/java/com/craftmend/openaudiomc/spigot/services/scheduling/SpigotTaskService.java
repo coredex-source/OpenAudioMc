@@ -156,8 +156,9 @@ public class SpigotTaskService implements TaskService {
                 .getMethod("execute", Class.forName("org.bukkit.plugin.Plugin"), Runnable.class)
                 .invoke(scheduler, OpenAudioMcSpigot.getInstance(), runnable);
         } catch (Exception e) {
-            // Fallback to direct execution if global region scheduler fails
-            runnable.run();
+            // Fallback to scheduling with 0 delay to ensure sync execution on main thread
+            // This prevents IllegalStateException when events are triggered from async contexts
+            schduleSyncDelayedTask(runnable, 0);
         }
     }
 
