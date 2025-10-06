@@ -1,10 +1,9 @@
 package com.craftmend.openaudiomc.spigot.modules.players.listeners;
 
 import com.craftmend.openaudiomc.OpenAudioMc;
-import com.craftmend.openaudiomc.spigot.OpenAudioMcSpigot;
+import com.craftmend.openaudiomc.generic.platform.interfaces.TaskService;
 import com.craftmend.openaudiomc.spigot.modules.players.SpigotPlayerService;
 import com.craftmend.openaudiomc.spigot.modules.players.objects.SpigotConnection;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -16,7 +15,7 @@ public class PlayerTeleportationListener implements Listener {
     public void onTp(PlayerTeleportEvent event) {
 
         // run a tick later, to run post teleport if the player actually moved
-        Bukkit.getScheduler().runTaskLater(OpenAudioMcSpigot.getInstance(), () -> {
+        OpenAudioMc.resolveDependency(TaskService.class).schduleSyncDelayedTask(() -> {
             if (event.isCancelled()) return;
 
             // this event might be called before the player is registered, as some plugins use

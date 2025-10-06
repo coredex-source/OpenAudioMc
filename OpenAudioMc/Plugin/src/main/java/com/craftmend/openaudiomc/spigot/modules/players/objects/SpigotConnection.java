@@ -108,7 +108,7 @@ public class SpigotConnection {
 
             if (player.isOnline()) {
                 locationDataWatcher.getCallback().accept(player.getLocation());
-                Bukkit.getScheduler().runTask(OpenAudioMcSpigot.getInstance(), () -> Bukkit.getServer().getPluginManager().callEvent(new ClientConnectEvent(player, this)));
+                OpenAudioMc.resolveDependency(TaskService.class).runSync(() -> Bukkit.getServer().getPluginManager().callEvent(new ClientConnectEvent(player, this)));
             }
         });
 

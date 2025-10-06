@@ -1,5 +1,7 @@
 package com.craftmend.openaudiomc.spigot.services.threading;
 
+import com.craftmend.openaudiomc.OpenAudioMc;
+import com.craftmend.openaudiomc.generic.platform.interfaces.TaskService;
 import com.craftmend.openaudiomc.generic.service.Inject;
 import com.craftmend.openaudiomc.generic.service.Service;
 import com.craftmend.openaudiomc.spigot.OpenAudioMcSpigot;
@@ -35,8 +37,9 @@ public class ExecutorService extends Service {
     public void onEnable() {
         boot();
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, executor::tickSync, 1, 1);
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+        TaskService taskService = OpenAudioMc.resolveDependency(TaskService.class);
+        taskService.scheduleSyncRepeatingTask(executor::tickSync, 1, 1);
+        taskService.scheduleSyncRepeatingTask(() -> {
             if (Duration.between(lastPing, Instant.now()).toMillis() > 10000) {
                 executor.stop();
                 executor = null;

@@ -6,6 +6,7 @@ import com.craftmend.openaudiomc.api.interfaces.ExternalModule;
 import com.craftmend.openaudiomc.generic.commands.CommandService;
 import com.craftmend.openaudiomc.generic.commands.enums.CommandContext;
 import com.craftmend.openaudiomc.generic.environment.MagicValue;
+import com.craftmend.openaudiomc.generic.platform.interfaces.TaskService;
 import com.craftmend.openaudiomc.generic.proxy.interfaces.UserHooks;
 import com.craftmend.openaudiomc.generic.state.StateService;
 import com.craftmend.openaudiomc.api.user.User;
@@ -80,7 +81,7 @@ public final class Vistas extends ExternalModule implements Listener {
             s.getServer().getPluginManager().registerEvents(new PlayerListener(this), s);
 
             // register self after a bit
-            Bukkit.getScheduler().runTaskLater(OpenAudioMcSpigot.getInstance(), this::registerSelf, 80); // 4 seconds
+            OpenAudioMc.resolveDependency(TaskService.class).schduleSyncDelayedTask(this::registerSelf, 80); // 4 seconds
         }
 
         if (event == ModuleEvent.SHUTDOWN) {

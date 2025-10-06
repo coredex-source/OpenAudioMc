@@ -62,6 +62,26 @@ public class VelocityTaskService implements TaskService {
     }
 
     @Override
+    public void cancelTask(int id) {
+        // Alias for cancelRepeatingTask since we handle all tasks the same way
+        cancelRepeatingTask(id);
+    }
+
+    @Override
+    public int scheduleAsyncDelayedTask(Runnable runnable, int delay) {
+        if (OpenAudioMc.getInstance().isDisabled()) {
+            runnable.run();
+            return -1;
+        }
+
+        ScheduledTask task = OpenAudioMcVelocity.getInstance().getServer().getScheduler()
+                .buildTask(OpenAudioMcVelocity.getInstance(), runnable)
+                .delay((delay / 20), TimeUnit.SECONDS)
+                .schedule();
+        return putTask(task);
+    }
+
+    @Override
     public void runAsync(Runnable runnable) {
         if (OpenAudioMc.getInstance().isDisabled()) {
             notifyRunner();

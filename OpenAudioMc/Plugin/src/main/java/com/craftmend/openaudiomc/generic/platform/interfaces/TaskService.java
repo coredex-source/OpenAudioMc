@@ -7,7 +7,9 @@ public interface TaskService {
     int scheduleAsyncRepeatingTask(Runnable runnable, int delayUntilFirst, int tickInterval);
     int scheduleSyncRepeatingTask(Runnable runnable, int delayUntilFirst, int tickInterval);
     int schduleSyncDelayedTask(Runnable runnable, int delay);
+    int scheduleAsyncDelayedTask(Runnable runnable, int delay);
     void cancelRepeatingTask(int id);
+    void cancelTask(int id);
     void runAsync(Runnable runnable);
     void runSync(Runnable runnable);
 

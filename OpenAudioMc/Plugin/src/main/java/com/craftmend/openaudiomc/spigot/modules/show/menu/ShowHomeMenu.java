@@ -1,10 +1,10 @@
 package com.craftmend.openaudiomc.spigot.modules.show.menu;
 
-import com.craftmend.openaudiomc.spigot.OpenAudioMcSpigot;
+import com.craftmend.openaudiomc.OpenAudioMc;
+import com.craftmend.openaudiomc.generic.platform.interfaces.TaskService;
 import com.craftmend.openaudiomc.spigot.modules.show.objects.Show;
 import com.craftmend.openaudiomc.spigot.services.clicklib.Item;
 import com.craftmend.openaudiomc.spigot.services.clicklib.menu.Menu;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -19,7 +19,7 @@ public class ShowHomeMenu extends Menu {
 
         fillout(show, player);
 
-        scheduler = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(OpenAudioMcSpigot.getInstance(), () -> {
+        scheduler = OpenAudioMc.resolveDependency(TaskService.class).scheduleSyncRepeatingTask(() -> {
             if  (!player.isOnline() || canceled) {
                 onClose(player);
                 return;
@@ -34,7 +34,7 @@ public class ShowHomeMenu extends Menu {
     @Override
     public void onClose(Player player) {
         canceled = true;
-        Bukkit.getScheduler().cancelTask(scheduler);
+        OpenAudioMc.resolveDependency(TaskService.class).cancelRepeatingTask(scheduler);
     }
 
     private void fillout(Show show, Player player) {

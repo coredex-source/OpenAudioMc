@@ -3,6 +3,7 @@ package com.craftmend.openaudiomc.spigot.modules.regions.objects;
 import com.craftmend.openaudiomc.OpenAudioMc;
 import com.craftmend.openaudiomc.api.media.Media;
 import com.craftmend.openaudiomc.generic.platform.Platform;
+import com.craftmend.openaudiomc.generic.platform.interfaces.TaskService;
 import com.craftmend.openaudiomc.spigot.OpenAudioMcSpigot;
 import com.craftmend.openaudiomc.spigot.modules.players.SpigotPlayerService;
 import com.craftmend.openaudiomc.spigot.modules.regions.registry.WorldRegionManager;
@@ -14,7 +15,7 @@ import org.bukkit.Bukkit;
 @Table(name = "timed_region_properties")
 public class TimedRegionProperties extends RegionProperties {
 
-    private int task = -1;
+    private int taskId = -1;
     @Column
     private String regionId;
     private Media media;
@@ -32,7 +33,7 @@ public class TimedRegionProperties extends RegionProperties {
         this.regionId = regionId;
 
         if (OpenAudioMc.getInstance().getPlatform() == Platform.SPIGOT) {
-            this.task = Bukkit.getScheduler().scheduleAsyncDelayedTask(OpenAudioMcSpigot.getInstance(), () -> {
+            this.taskId = OpenAudioMc.resolveDependency(TaskService.class).scheduleAsyncDelayedTask(() -> {
 
                 // remove myself from all my worlds
                 for (String world : getWorlds()) {
@@ -55,7 +56,9 @@ public class TimedRegionProperties extends RegionProperties {
     }
 
     public void destroy() {
-        Bukkit.getScheduler().cancelTask(task);
+        if (taskId != -1) {
+            OpenAudioMc.resolveDependency(TaskService.class).cancelTask(taskId);
+        }
         forceUpdateClients();
     }
 

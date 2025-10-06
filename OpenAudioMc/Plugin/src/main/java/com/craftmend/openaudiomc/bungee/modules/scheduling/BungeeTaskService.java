@@ -47,6 +47,22 @@ public class BungeeTaskService implements TaskService {
     }
 
     @Override
+    public void cancelTask(int id) {
+        // Alias for cancelRepeatingTask since we handle all tasks the same way
+        cancelRepeatingTask(id);
+    }
+
+    @Override
+    public int scheduleAsyncDelayedTask(Runnable runnable, int delay) {
+        if (OpenAudioMc.getInstance().isDisabled()) {
+            runnable.run();
+            return -1;
+        }
+
+        return OpenAudioMcBungee.getInstance().getProxy().getScheduler().schedule(OpenAudioMcBungee.getInstance(), runnable, (delay / 20), TimeUnit.SECONDS).getId();
+    }
+
+    @Override
     public void runAsync(Runnable runnable) {
         if (OpenAudioMc.getInstance().isDisabled()) {
             notifyRunner();

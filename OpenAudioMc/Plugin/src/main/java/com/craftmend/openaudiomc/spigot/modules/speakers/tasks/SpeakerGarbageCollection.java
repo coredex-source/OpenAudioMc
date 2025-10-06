@@ -6,29 +6,33 @@ import com.craftmend.openaudiomc.generic.logging.OpenAudioLogger;
 import com.craftmend.openaudiomc.generic.platform.interfaces.TaskService;
 import com.craftmend.openaudiomc.generic.storage.enums.GcStrategy;
 import com.craftmend.openaudiomc.generic.storage.enums.StorageKey;
-import com.craftmend.openaudiomc.spigot.OpenAudioMcSpigot;
 import com.craftmend.openaudiomc.spigot.modules.speakers.SpeakerService;
 import com.craftmend.openaudiomc.spigot.modules.speakers.objects.MappedLocation;
 import com.craftmend.openaudiomc.spigot.modules.speakers.objects.Speaker;
 import com.craftmend.openaudiomc.spigot.modules.speakers.utils.SpeakerUtils;
 import org.bukkit.Location;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class SpeakerGarbageCollection extends BukkitRunnable {
+public class SpeakerGarbageCollection implements Runnable {
 
     private SpeakerService speakerService;
     private static int PROCESSED_SPEAKERS = 0;
     private int lastFraction = 0;
     private final int FRACTION_GROUP_SIZE = 50;
     private boolean forceRun = false;
+    private int taskId = -1;
 
     public SpeakerGarbageCollection(SpeakerService speakerService) {
         this.speakerService = speakerService;
-        runTaskTimer(OpenAudioMcSpigot.getInstance(), 600, 600);
-        OpenAudioMc.resolveDependency(TaskService.class).scheduleAsyncRepeatingTask(() -> {
+        TaskService taskService = OpenAudioMc.resolveDependency(TaskService.class);
+        
+        // Schedule the garbage collection task to run every 600 ticks (30 seconds)
+        this.taskId = taskService.scheduleSyncRepeatingTask(this, 600, 600);
+        
+        // Schedule the logging task
+        taskService.scheduleAsyncRepeatingTask(() -> {
             if (PROCESSED_SPEAKERS != 0) {
                 OpenAudioLogger.info("The garbage collector found and processed " + PROCESSED_SPEAKERS + " broken speakers");
                 PROCESSED_SPEAKERS = 0;
@@ -39,6 +43,16 @@ public class SpeakerGarbageCollection extends BukkitRunnable {
     public SpeakerGarbageCollection() {
         this.forceRun = true;
         this.speakerService = OpenAudioMc.getService(SpeakerService.class);
+    }
+
+    /**
+     * Stop the garbage collection task
+     */
+    public void stop() {
+        if (taskId != -1) {
+            OpenAudioMc.resolveDependency(TaskService.class).cancelRepeatingTask(taskId);
+            taskId = -1;
+        }
     }
 
     @Override

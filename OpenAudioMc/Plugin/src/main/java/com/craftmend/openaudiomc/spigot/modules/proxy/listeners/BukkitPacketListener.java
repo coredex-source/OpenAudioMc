@@ -14,6 +14,7 @@ import com.craftmend.openaudiomc.generic.networking.handlers.ClientVoiceChanelIn
 import com.craftmend.openaudiomc.generic.oac.OpenaudioAccountService;
 import com.craftmend.openaudiomc.generic.oac.enums.CraftmendTag;
 import com.craftmend.openaudiomc.generic.environment.MagicValue;
+import com.craftmend.openaudiomc.generic.platform.interfaces.TaskService;
 import com.craftmend.openaudiomc.generic.media.time.TimeService;
 import com.craftmend.openaudiomc.generic.client.objects.ClientConnection;
 import com.craftmend.openaudiomc.generic.client.session.ClientAuth;
@@ -90,7 +91,7 @@ public class BukkitPacketListener implements PacketListener {
     public void onCommand(User user, CommandProxyPacket packet) {
         User<?> player = OpenAudioMc.resolveDependency(UserHooks.class).byUuid(packet.getCommandProxy().getExecutor());
         if (player == null) return;
-        Bukkit.getScheduler().runTask(OpenAudioMcSpigot.getInstance(), () -> {
+        OpenAudioMc.resolveDependency(TaskService.class).runSync(() -> {
             try {
                 OpenAudioMc.getService(CommandService.class)
                         .getSubCommand(CommandContext.OPENAUDIOMC, packet.getCommandProxy().getProxiedCommand().toString().toLowerCase())

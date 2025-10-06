@@ -3,6 +3,7 @@ package com.craftmend.openaudiomc.vistas.client.listeners;
 import com.craftmend.openaudiomc.OpenAudioMc;
 import com.craftmend.openaudiomc.generic.logging.OpenAudioLogger;
 import com.craftmend.openaudiomc.generic.networking.interfaces.NetworkingService;
+import com.craftmend.openaudiomc.generic.platform.interfaces.TaskService;
 import com.craftmend.openaudiomc.generic.proxy.interfaces.UserHooks;
 import com.craftmend.openaudiomc.api.user.User;
 import com.craftmend.openaudiomc.spigot.OpenAudioMcSpigot;
@@ -32,7 +33,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         // delay one second to prevent fuckery lol
-        int task = OpenAudioMcSpigot.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(OpenAudioMcSpigot.getInstance(), () -> {
+        int taskId = OpenAudioMc.resolveDependency(TaskService.class).scheduleAsyncDelayedTask(() -> {
             // get user for this player
             User user = OpenAudioMc.resolveDependency(UserHooks.class).byUuid(event.getPlayer().getUniqueId());
 
@@ -50,14 +51,14 @@ public class PlayerListener implements Listener {
                     )
             );
             joinCancels.remove(event.getPlayer().getUniqueId());
-        }, 40).getTaskId(); // 2 seconds
-        joinCancels.put(event.getPlayer().getUniqueId(), task);
+        }, 40); // 2 seconds
+        joinCancels.put(event.getPlayer().getUniqueId(), taskId);
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         if (joinCancels.containsKey(event.getPlayer().getUniqueId())) {
-            Bukkit.getScheduler().cancelTask(joinCancels.get(event.getPlayer().getUniqueId()));
+            OpenAudioMc.resolveDependency(TaskService.class).cancelTask(joinCancels.get(event.getPlayer().getUniqueId()));
             joinCancels.remove(event.getPlayer().getUniqueId());
         }
 

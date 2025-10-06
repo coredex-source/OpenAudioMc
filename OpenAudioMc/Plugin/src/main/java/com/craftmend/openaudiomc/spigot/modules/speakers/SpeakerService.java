@@ -5,6 +5,7 @@ import com.craftmend.openaudiomc.api.speakers.Loc;
 import com.craftmend.openaudiomc.generic.database.DatabaseService;
 import com.craftmend.openaudiomc.generic.logging.OpenAudioLogger;
 import com.craftmend.openaudiomc.generic.media.MediaService;
+import com.craftmend.openaudiomc.generic.platform.interfaces.TaskService;
 import com.craftmend.openaudiomc.generic.service.Inject;
 import com.craftmend.openaudiomc.generic.service.Service;
 import com.craftmend.openaudiomc.generic.storage.enums.StorageKey;
@@ -82,7 +83,7 @@ public class SpeakerService extends Service {
 
             OpenAudioLogger.info("Starting redstone speaker tick task with interval " + interval + " ticks");
 
-            Bukkit.getScheduler().scheduleAsyncRepeatingTask(OpenAudioMcSpigot.getInstance(), () -> {
+            OpenAudioMc.resolveDependency(TaskService.class).scheduleAsyncRepeatingTask(() -> {
                 for (Speaker speaker : speakerMap.values()) {
                     // does this speaker have a redstone trigger?
                     if (!ExtraSpeakerOptions.REQUIRES_REDSTONE.isEnabledFor(speaker)) return;

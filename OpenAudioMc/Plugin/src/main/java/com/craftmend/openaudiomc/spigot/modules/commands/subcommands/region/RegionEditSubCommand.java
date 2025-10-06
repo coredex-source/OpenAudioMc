@@ -7,6 +7,7 @@ import com.craftmend.openaudiomc.generic.commands.objects.Argument;
 import com.craftmend.openaudiomc.generic.database.DatabaseService;
 import com.craftmend.openaudiomc.generic.media.objects.MediaUpdate;
 import com.craftmend.openaudiomc.generic.networking.packets.client.media.PacketClientUpdateMedia;
+import com.craftmend.openaudiomc.generic.platform.interfaces.TaskService;
 import com.craftmend.openaudiomc.api.user.User;
 import com.craftmend.openaudiomc.generic.utils.data.ArrayUtil;
 import com.craftmend.openaudiomc.spigot.OpenAudioMcSpigot;
@@ -137,7 +138,7 @@ public class RegionEditSubCommand extends ParameteredSubCommand {
         // ignore temp
         if (rp instanceof TimedRegionProperties) return;
 
-        Bukkit.getScheduler().runTaskAsynchronously(OpenAudioMcSpigot.getInstance(), () -> {
+        OpenAudioMc.resolveDependency(TaskService.class).runAsync(() -> {
             OpenAudioMc.getService(DatabaseService.class).getRepository(RegionProperties.class).save(rp);
         });
     }

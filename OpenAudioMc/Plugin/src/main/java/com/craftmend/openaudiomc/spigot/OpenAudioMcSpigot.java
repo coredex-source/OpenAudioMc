@@ -11,6 +11,7 @@ import com.craftmend.openaudiomc.generic.proxy.interfaces.UserHooks;
 import com.craftmend.openaudiomc.generic.state.StateService;
 import com.craftmend.openaudiomc.generic.storage.interfaces.Configuration;
 import com.craftmend.openaudiomc.generic.platform.interfaces.TaskService;
+import com.craftmend.openaudiomc.spigot.services.scheduling.SpigotTaskService;
 import com.craftmend.openaudiomc.generic.platform.interfaces.OpenAudioInvoker;
 import com.craftmend.openaudiomc.generic.networking.interfaces.NetworkingService;
 import com.craftmend.openaudiomc.generic.platform.Platform;
@@ -151,6 +152,13 @@ public final class OpenAudioMcSpigot extends JavaPlugin implements OpenAudioInvo
         OpenAudioLogger.info("Shutting down");
         OpenAudioMc.getService(SpigotPlayerService.class).onDisable();
         OpenAudioMc.getService(PredictiveMediaService.class).onDisable();
+        
+        // Shutdown the task service if it's a SpigotTaskService instance
+        TaskService taskService = OpenAudioMc.resolveDependency(TaskService.class);
+        if (taskService instanceof SpigotTaskService) {
+            ((SpigotTaskService) taskService).shutdown();
+        }
+        
         openAudioMc.disable();
         HandlerList.unregisterAll(this);
         OpenAudioLogger.info("Stopped OpenAudioMc. Goodbye.");

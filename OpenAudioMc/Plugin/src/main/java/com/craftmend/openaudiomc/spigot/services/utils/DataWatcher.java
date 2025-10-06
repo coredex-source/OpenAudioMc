@@ -1,5 +1,7 @@
 package com.craftmend.openaudiomc.spigot.services.utils;
 
+import com.craftmend.openaudiomc.OpenAudioMc;
+import com.craftmend.openaudiomc.generic.platform.interfaces.TaskService;
 import com.craftmend.openaudiomc.spigot.services.utils.interfaces.Feeder;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -25,10 +27,11 @@ public class DataWatcher<T> {
             forced = false;
         };
 
+        TaskService taskService = OpenAudioMc.resolveDependency(TaskService.class);
         if (sync) {
-            this.task = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, executor, delayTicks, delayTicks);
+            this.task = taskService.scheduleSyncRepeatingTask(executor, delayTicks, delayTicks);
         } else {
-            this.task = Bukkit.getScheduler().scheduleAsyncRepeatingTask(plugin, executor, delayTicks, delayTicks);
+            this.task = taskService.scheduleAsyncRepeatingTask(executor, delayTicks, delayTicks);
         }
 
         isRunning = true;
@@ -53,7 +56,8 @@ public class DataWatcher<T> {
     }
 
     public void stop() {
-        Bukkit.getScheduler().cancelTask(this.task);
+        TaskService taskService = OpenAudioMc.resolveDependency(TaskService.class);
+        taskService.cancelRepeatingTask(this.task);
         this.isRunning = false;
     }
 
